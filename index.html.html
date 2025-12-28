@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>H&M Vibe Coding - 供應鏈透明度管理系統</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #f8fafc;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 1rem;
+        }
+        .status-pulse {
+            width: 12px;
+            height: 12px;
+            background: #10b981;
+            border-radius: 50%;
+            display: inline-block;
+            box-shadow: 0 0 10px #10b981;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
+        .gradient-text {
+            background: linear-gradient(90deg, #60a5fa, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+    </style>
+</head>
+<body class="p-6">
+
+    <header class="flex justify-between items-center mb-8">
+        <div>
+            <h1 class="text-3xl font-bold gradient-text">H&M Supply Chain Vibe Monitor</h1>
+            <p class="text-slate-400">基於 Vibe Coding 的非線性 AI 監測系統</p>
+        </div>
+        <div class="flex items-center space-x-4">
+            <span class="text-sm">系統狀態：<span class="status-pulse mr-1"></span> 運作中</span>
+            <button class="bg-blue-600 hover:bg-blue-500 px-4 py-2 rounded-lg transition" onclick="refreshData()">重新模擬 AI 權重</button>
+        </div>
+    </header>
+
+    <main class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        <section class="lg:col-span-1 space-y-6">
+            <div class="glass-card p-6">
+                <h3 class="text-xl font-semibold mb-4 text-blue-300">數據透明度評分 (Global)</h3>
+                <div class="text-5xl font-bold mb-2">87.4%</div>
+                <div class="w-full bg-slate-700 h-2 rounded-full overflow-hidden">
+                    <div id="transparency-bar" class="bg-blue-500 h-full transition-all duration-1000" style="width: 87.4%"></div>
+                </div>
+                <p class="text-sm text-slate-400 mt-4">已成功串接孟加拉、越南等 240 個二級供應商數據點</p>
+            </div>
+
+            <div class="glass-card p-6">
+                <h3 class="text-xl font-semibold mb-4 text-purple-300">庫存偏差警告 (Dropout Mechanism)</h3>
+                <ul class="space-y-4">
+                    <li class="flex justify-between items-center bg-red-900/20 p-3 rounded border border-red-500/30">
+                        <span>斯德哥爾摩旗艦店 (缺貨)</span>
+                        <span class="text-red-400 font-bold">-24%</span>
+                    </li>
+                    <li class="flex justify-between items-center bg-yellow-900/20 p-3 rounded border border-yellow-500/30">
+                        <span>倫敦區域倉庫 (過度擬合)</span>
+                        <span class="text-yellow-400 font-bold">+18%</span>
+                    </li>
+                    <li class="flex justify-between items-center bg-blue-900/20 p-3 rounded border border-blue-500/30">
+                        <span>孟加拉成品廠 (運輸中)</span>
+                        <span class="text-blue-400 font-bold">預計 3 天</span>
+                    </li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="lg:col-span-2 space-y-6">
+            <div class="glass-card p-6">
+                <h3 class="text-xl font-semibold mb-4 text-green-300">社交媒體趨勢特徵提取 (Convolutional Feature Map)</h3>
+                <div class="h-64 flex items-end space-x-2">
+                    <div id="chart-container" class="flex items-end w-full h-full space-x-1"></div>
+                </div>
+                <div class="flex justify-around mt-4 text-xs text-slate-400">
+                    <span>Y2K 風格</span>
+                    <span>極簡主義</span>
+                    <span>工裝褲</span>
+                    <span>金屬質感</span>
+                    <span>環保棉色</span>
+                </div>
+            </div>
+
+            <div class="glass-card p-6">
+                <h3 class="text-xl font-semibold mb-4 text-pink-300">AI 最佳化調度建議 (Softmax 權重機率)</h3>
+                <table class="w-full text-left text-sm">
+                    <thead>
+                        <tr class="text-slate-500 border-b border-slate-700">
+                            <th class="pb-2">調度來源</th>
+                            <th class="pb-2">目標市場</th>
+                            <th class="pb-2">款式 ID</th>
+                            <th class="pb-2">成功機率 (Confidence)</th>
+                            <th class="pb-2">執行</th>
+                        </tr>
+                    </thead>
+                    <tbody id="dispatch-table">
+                        </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // 模擬趨勢圖表數據
+        function generateFeatureMap() {
+            const container = document.getElementById('chart-container');
+            container.innerHTML = '';
+            for (let i = 0; i < 40; i++) {
+                const height = Math.floor(Math.random() * 80) + 10;
+                const bar = document.createElement('div');
+                bar.className = 'flex-1 bg-gradient-to-t from-blue-600 to-green-400 opacity-60 rounded-t-sm';
+                bar.style.height = `${height}%`;
+                container.appendChild(bar);
+            }
+        }
+
+        // 模擬 Softmax 決策表
+        function generateDispatch() {
+            const tbody = document.getElementById('dispatch-table');
+            const data = [
+                { from: '倫敦倉庫', to: '斯德哥爾摩', item: 'HM-9921', prob: '98.2%' },
+                { from: '越南生產線', to: '東京', item: 'HM-1102', prob: '89.5%' },
+                { from: '孟加拉廠', to: '巴黎', item: 'HM-8843', prob: '76.1%' }
+            ];
+            
+            tbody.innerHTML = data.map(row => `
+                <tr class="border-b border-slate-800 hover:bg-white/5 transition">
+                    <td class="py-4">${row.from}</td>
+                    <td class="py-4">${row.to}</td>
+                    <td class="py-4 font-mono text-yellow-500">${row.item}</td>
+                    <td class="py-4 font-bold text-green-400">${row.prob}</td>
+                    <td class="py-4"><button class="bg-slate-700 px-3 py-1 rounded text-xs hover:bg-green-600">確認調度</button></td>
+                </tr>
+            `).join('');
+        }
+
+        function refreshData() {
+            generateFeatureMap();
+            generateDispatch();
+            const bar = document.getElementById('transparency-bar');
+            const newScore = (85 + Math.random() * 10).toFixed(1);
+            bar.style.width = newScore + '%';
+        }
+
+        // 初始化
+        window.onload = () => {
+            generateFeatureMap();
+            generateDispatch();
+        };
+    </script>
+</body>
+</html>
